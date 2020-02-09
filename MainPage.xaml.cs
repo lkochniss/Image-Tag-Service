@@ -32,13 +32,8 @@ namespace image_tag_service
             if (folder != null)
             {
                 StorageApplicationPermissions.FutureAccessList.AddOrReplace("PickedFolderToken", folder);
-                initial.Text = folder.Path;
                 ShowImages(folder);
 
-            }
-            else
-            {
-                initial.Text = "Error";
             }
         }
 

@@ -14,16 +14,13 @@
     </Page.TopAppBar>
     <Page.Content>
         <Grid>
-            <TextBlock x:Name="initial">Initial</TextBlock>
-            <ListView x:Name="ImageGallery" HorizontalAlignment="Stretch" VerticalAlignment="Top">
-                <ListView.ItemTemplate>
+            <GridView x:Name="ImageGallery" VerticalAlignment="Top">
+                <GridView.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel Orientation="Vertical" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-                            <Image Source="{Binding ImageData}" HorizontalAlignment="Stretch" VerticalAlignment="Top" Stretch="UniformToFill" />
-                        </StackPanel>
+                        <Image Width="200"  Source="{Binding ImageData}" HorizontalAlignment="Stretch" VerticalAlignment="Top" Stretch="UniformToFill" />
                     </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+                </GridView.ItemTemplate>
+            </GridView>
         </Grid>
     </Page.Content>
 </Page>
