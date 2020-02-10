@@ -1,87 +1,43 @@
-﻿using System;
+﻿using image_tag_service.Modells;
+using image_tag_service.Services;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Windows.Storage;
-using Windows.Storage.Search;
 using Windows.Storage.AccessCache;
-using Windows.Storage.Pickers;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media.Imaging;
 
 namespace image_tag_service
 {
     public sealed partial class MainPage : Page
     {
-        readonly FolderPicker folderPicker = new FolderPicker();
+        
+        private List<PreviewImage> previewImages = new List<PreviewImage>();
 
         public MainPage()
         {
             this.InitializeComponent();
-            folderPicker.SuggestedStartLocation = PickerLocationId.Desktop;
-            folderPicker.FileTypeFilter.Add(".png");
-            folderPicker.FileTypeFilter.Add(".jpeg");
-            folderPicker.FileTypeFilter.Add(".jpg");
         }
 
-        private async void SyncFolderClick(object sender, RoutedEventArgs e)
+        private async void SyncFolder_Clicked(object sender, RoutedEventArgs e)
         {
+            SyncDirectoryService syncDirectoryService = new SyncDirectoryService();
+            StorageFolder folder = await syncDirectoryService.OpenPicker();
 
-
-            StorageFolder folder = await folderPicker.PickSingleFolderAsync();
             if (folder != null)
             {
                 StorageApplicationPermissions.FutureAccessList.AddOrReplace("PickedFolderToken", folder);
-                ShowImages(folder);
 
+                ImageService imageService = new ImageService();
+                previewImages = await imageService.ShowImages(folder);
+
+                ImageGallery.ItemsSource = previewImages.ToArray();
             }
         }
 
-        private async void ShowImages(StorageFolder imageFolder)
+        private void TagSearchInput_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
         {
-            CommonFileQuery query = CommonFileQuery.DefaultQuery;
-            var queryOptions = new QueryOptions(query, new[] { ".png", ".jpg" });
-            queryOptions.FolderDepth = FolderDepth.Deep;
-            var queryResult = imageFolder.CreateFileQueryWithOptions(queryOptions);
-
-            var previewImages = await GenerateImages(await imageFolder.GetFilesAsync());
-
-            this.ImageGallery.ItemsSource = previewImages.ToArray();
+            SearchService service = new SearchService();
+            ImageGallery.ItemsSource = service.SearchImages(this.previewImages, TagSearchInput.Text);
         }
-
-        private async Task<List<PreviewImage>> GenerateImages(IReadOnlyList<StorageFile> images)
-        {
-            List<PreviewImage> previewImages = new List<PreviewImage>();
-            foreach (StorageFile image in images)
-            {
-                using (var stream = await image.OpenAsync(FileAccessMode.Read))
-                {
-                    var previewImage = new BitmapImage();
-                    await previewImage.SetSourceAsync(stream);
-
-                    previewImages.Add(new PreviewImage { ImageData = previewImage });
-                }
-            }
-
-            return previewImages;
-        }
-    }
-
-    public class PreviewImage
-    {
-        private string _Tags;
-        public string Tags
-        {
-            get { return this._Tags; }
-            set { this._Tags = value; }
-        }
-
-        private BitmapImage _ImageData;
-        public BitmapImage ImageData
-        {
-            get { return this._ImageData; }
-            set { this._ImageData = value; }
-        }
-
     }
 }

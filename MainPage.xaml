@@ -8,16 +8,48 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" d:DesignWidth="1494.796">
     <Page.TopAppBar>
-        <AppBar IsOpen="True">
-            <AppBarButton Icon="SyncFolder" Click="SyncFolderClick"></AppBarButton>
-        </AppBar>
+        <CommandBar>
+            <AppBarButton Grid.Column="1" Icon="SyncFolder" Click="SyncFolder_Clicked"></AppBarButton>
+            <CommandBar.Content>
+                <Grid VerticalAlignment="Top" HorizontalAlignment="Left">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Column="1" Margin="5">Search by Tags:</TextBlock>
+                    <AutoSuggestBox 
+                        Grid.Column="2" 
+                        Width="200" 
+                        Name="TagSearchInput" 
+                        QueryIcon="Find" 
+                        TextChanged="TagSearchInput_TextChanged"
+                     ></AutoSuggestBox>
+                </Grid>
+            </CommandBar.Content>
+        </CommandBar>
     </Page.TopAppBar>
     <Page.Content>
         <Grid>
             <GridView x:Name="ImageGallery" VerticalAlignment="Top">
                 <GridView.ItemTemplate>
                     <DataTemplate>
-                        <Image Width="200"  Source="{Binding ImageData}" HorizontalAlignment="Stretch" VerticalAlignment="Top" Stretch="UniformToFill" />
+                        <StackPanel>
+                            <Image Width="200"  Source="{Binding ImageData}" />
+                            <ItemsControl ItemsSource="{Binding Tags}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding}"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
                     </DataTemplate>
                 </GridView.ItemTemplate>
             </GridView>
